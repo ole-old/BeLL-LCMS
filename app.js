@@ -33,6 +33,13 @@ ddoc.views = {
     }
   },
   
+  resources: {
+    map: function(doc) {
+      if (doc.kind == 'resource') {
+        emit(doc._id, true)
+      }
+    }
+  },
 
   /*
    * http://raspberrypi.local:5984/bell-library/_design/ghana-reads/_view/resources_by_level?key="p3"
