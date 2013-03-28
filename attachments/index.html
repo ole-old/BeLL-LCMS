@@ -15,22 +15,68 @@
 
   <div class="container">
     
-    <h1>Group Manager</h1>
-    <hr />
-    <div class="group-manager"></div>
+<form name="form1" method="get" action="">
+      <table width="95%">
+        <tbody><tr>
+          <td width="123"><b>Week starting on</b></td>
+          <td width="188"><span id="sprytextfield1">
+          <span style="position: relative;"><input type="text" name="dateExec" id="dateExec" style="width:50%" autocomplete="off" globalnumber="607"></span>
+          <td width="139"><b>Class </b>: <span id="spryselect1">
+            <select name="class" id="level">
 
-    <h1>Collection Manager</h1>
-    <hr />
-    <div class="collection-manager"></div>
+            </select>
+          <span class="selectRequiredMsg">Please select an item.</span></span></td>
+        </tr>
+        <tr>
+          <td colspan="3"><b> Selected stories</b></td>
+        </tr>
+        <tr>
+          <td colspan="3" align="left"><b>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+            <select name="story1" id="story1" class="resources-on-form-view">
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" align="left"><b>2</b><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>            
+            <select name="story2" id="story2" class="resources-on-form-view">
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" align="left"><b>3</b><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>            
+            <select name="story3" id="story3" class="resources-on-form-view">
+            </select>
+        </tr>
+        <tr>
+          <td colspan="3" align="left"><b>4</b><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+            <select name="story4" id="story4" class="resources-on-form-view">
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td align="center">&nbsp;</td>
+          <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+          <td colspan="3"><b style="color:#666;">
 
-
-    <h1>Resource Manager</h1>
-    <hr />
-    <div class="resource-manager"></div>
-
-    <h1>Resource Viewer</h1>
-    <hr />
-    <div class="resource-viewer"></div>
+    Note for discussion:
+    <br>
+    1. These stories could be used for comprehension passages, or listening and speaking
+             or vocabulary building or even composition
+    <br>
+    2. The question however is what time would they have to read these stories? Would there be enough devices for everyone to read these stories? what are the implications for the time table
+    <br>
+    3. could this be an after school or a Saturday activity? who will supervise? how do you compensate the one who comes to supervise?</b></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td colspan="2"><input type="submit" class="button" value="Submit">
+            <input type="reset" class="button" value="Reset">
+            <input type="hidden" name="systemDateForm" id="systemDateForm" value="2013-3-13 16:33:3"></td>
+        </tr>
+      </tbody></table>
+    </form>
 
   </div>
 
@@ -73,26 +119,14 @@
   -->
 
 
-  <script type="text/template" id="group-list-template">
-    <a href="#/group/new" class="btn btn-primary">New Group</a>
-    <hr />
-    <table class="table striped">
-      <thead>
-        <tr>
-          <th>Name</th><th>Level</th><th>Teacher</th><th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% _.each(groups, function(group) { %>
-          <tr>
-            <td><%= htmlEncode(group.get('name')) %></td>
-            <td><%= htmlEncode(group.get('level')) %></td>
-            <td><%= htmlEncode(group.get('teacher')) %></td>
-            <td><a class="btn" href="#/group/edit/<%= group.id %>">Edit</a></td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
+  <script type="text/template" id="resources-on-form-template">
+      <% _.each(resources, function(resource) { %>
+        <option value='<% resource.get('id') %>'><%= htmlEncode(resource.get('title')) %></option>
+      <% }); %>
+  </script>
+
+  <script type="text/template" id="resource-on-form-template">
+    <option value='<% resource.get('id') %>'><%= htmlEncode(resource.get('title')) %></option>
   </script>
 
   <script type="text/template" id="edit-group-template">
@@ -123,11 +157,11 @@
 
 
   <script>
-    var thisDb = "lcms"
+    var thisDb = "bell-library"
 
     Backbone.couch.options = {
-      database: 'lcms',
-      design: 'library'
+      database: thisDb,
+      design: 'ghana-reads'
     };
   </script>
 
@@ -138,7 +172,8 @@
 
 
   <script>
-    var Group = Backbone.couch.Model.extend()
+    var Resource = Backbone.couch.Model.extend({"idAttribute":"id",urlRoot:thisDb})
+    var Level = Backbone.couch.Model.extend()
   </script>
 
 
@@ -148,13 +183,14 @@
 
 
   <script>
-    var Groups = Backbone.couch.Collection.extend({
+    var Resources = Backbone.couch.Collection.extend({
       couch: function() {
         return {
-            view: 'library/groups',
-            include_docs: true
+            view: 'ghana-reads/resources_by_level?key="p2"',
+            //include_docs: true
         }
       },
+      model: Resource,
       _db: Backbone.couch.db(thisDb)
     })
   </script>
@@ -166,20 +202,44 @@
 
 
   <script>
-    var GroupListView = Backbone.View.extend({
-      el: '.group-manager',
+    var ResourcesOnFormView = Backbone.View.extend({
+      el: '.resources-on-form-view',
       render: function () {
         var that = this;
-        var groups = new Groups();
-        groups.fetch({
-          success: function (groups) {
-            console.log(groups)
-            var template = _.template($('#group-list-template').html(), {groups: groups.models});
-            that.$el.html(template);
+        var resources = new Resources();
+        resources.fetch({
+          success: function (resources) {
+            console.log(resources)
+            _.each(resources.models, function(resource) {
+              resource.fetch({
+                success:function(resource) {
+                  var item = new ResourceOnFormView({model: resource})
+                  item.render()
+                }
+              })
+            })
+            //var template = _.template($('#resources-on-form-template').html(), {resources: resources.models});
+            //that.$el.html(template);
           }
         })
       }
     });
+    var resourcesOnFormView = new ResourcesOnFormView()
+  </script>
+
+  <script>
+    var ResourceOnFormView = Backbone.View.extend({
+      el: '.resources-on-form-view',
+      render: function () {
+        var that = this;
+            console.log(this.model)
+            var template = _.template($('#resource-on-form-template').html(), {resource: this.model});
+            that.$el.append(template);
+          
+      
+      }
+    });
+
   </script>
 
   <script>
@@ -234,7 +294,6 @@
   <script>
 
     // Register instances of our views for use in the router
-    var groupListView = new GroupListView()
     var groupEditView = new GroupEditView()
 
     // Define the routes
@@ -250,7 +309,7 @@
     var router = new Router;
     router.on('route:home', function() {
       // render user list
-      groupListView.render();
+      resourcesOnFormView.render();
     })
     router.on('route:group-edit', function(id) {
       groupEditView.render({id: id});
