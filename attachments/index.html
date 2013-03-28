@@ -22,7 +22,7 @@
           <td width="188"><span id="sprytextfield1">
           <span style="position: relative;"><input type="text" name="dateExec" id="dateExec" style="width:50%" autocomplete="off" globalnumber="607"></span>
           <td width="139"><b>Class </b>: <span id="spryselect1">
-            <select name="class" id="level">
+            <select name="class" id="levels">
 
             </select>
           <span class="selectRequiredMsg">Please select an item.</span></span></td>
@@ -32,24 +32,24 @@
         </tr>
         <tr>
           <td colspan="3" align="left"><b>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-            <select name="story1" id="story1" class="resources-on-form-view">
+            <select name="story1" id="story1" class="resources">
             </select>
           </td>
         </tr>
         <tr>
           <td colspan="3" align="left"><b>2</b><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>            
-            <select name="story2" id="story2" class="resources-on-form-view">
+            <select name="story2" id="story2" class="resources">
             </select>
           </td>
         </tr>
         <tr>
           <td colspan="3" align="left"><b>3</b><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>            
-            <select name="story3" id="story3" class="resources-on-form-view">
+            <select name="story3" id="story3" class="resources">
             </select>
         </tr>
         <tr>
           <td colspan="3" align="left"><b>4</b><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-            <select name="story4" id="story4" class="resources-on-form-view">
+            <select name="story4" id="story4" class="resources">
             </select>
           </td>
         </tr>
@@ -119,35 +119,13 @@
   -->
 
 
-  <script type="text/template" id="resources-on-form-template">
-      <% _.each(resources, function(resource) { %>
-        <option value='<% resource.get('id') %>'><%= htmlEncode(resource.get('title')) %></option>
-      <% }); %>
-  </script>
-
   <script type="text/template" id="resource-on-form-template">
     <option value='<% resource.get('id') %>'><%= htmlEncode(resource.get('title')) %></option>
   </script>
 
-  <script type="text/template" id="edit-group-template">
-    <form class="edit-group-form">
-      <legend><%= group ? 'Edit' : 'New' %> Group</legend>
-        <label>Group Name</label>
-        <input name="name" type="text" value="<%= group ? group.get('name') : '' %>">
-        <label>Level</label>
-        <input name="level" type="text" value="<%= group ? group.get('level') : '' %>">
-        <label>Age</label>
-        <input name="teacher" type="text" value="<%= group ? group.get('teacher') : '' %>">
-        <hr />
-       <button type="submit" class="btn"><%= group ? 'Update' : 'Create' %></button>
-       <% if(group) { %>
-        <input type="hidden" name="id" value="<%= group.id %>" />
-       <button data-group-id="<%= group.id %>" class="btn btn-danger delete">Delete</button>
-       <% }; %>
-    </form>
+  <script type="text/template" id="level-on-form-template">
+    <option value='<% resource.get('id') %>'><%= htmlEncode(resource.get('id')) %></option>
   </script>
-
-
 
 
 
@@ -173,7 +151,8 @@
 
   <script>
     var Resource = Backbone.couch.Model.extend({"idAttribute":"id",urlRoot:thisDb})
-    var Level = Backbone.couch.Model.extend()
+    // Level is not actually a model in the DB
+    var Level = Backbone.couch.Model.extend({"idAttribute":"id",urlRoot:thisDb})
   </script>
 
 
@@ -186,11 +165,20 @@
     var Resources = Backbone.couch.Collection.extend({
       couch: function() {
         return {
-            view: 'ghana-reads/resources_by_level?key="p2"',
-            //include_docs: true
+          view: 'ghana-reads/resources_by_level?key="p2"',
         }
       },
       model: Resource,
+      _db: Backbone.couch.db(thisDb)
+    })
+
+    var Levels = Backbone.couch.Collection.extend({
+      couch: function() {
+        return {
+          view: 'ghana-reads/active_levels?group=true',
+        }
+      },
+      model: Level,
       _db: Backbone.couch.db(thisDb)
     })
   </script>
@@ -202,10 +190,48 @@
 
 
   <script>
-    var ResourcesOnFormView = Backbone.View.extend({
-      el: '.resources-on-form-view',
+    var SelectResourcesView = Backbone.View.extend({
+      el: 'select.resources',
       render: function () {
-        var that = this;
+        var that = this
+        var resources = new Resources();
+        resources.fetch({
+          success: function (resources) {
+            console.log(resources)
+            _.each(resources.models, function(resource) {
+              // @todo Best practice to fetch the model in the collection view or the model's view?
+              resource.fetch({
+                success:function(resource) {
+                  var selectResourceView = new SelectResourceView({model: resource})
+                  selectResourceView.render()
+                }
+              })
+            })
+          }
+        })
+      }
+    });
+    var selectResourcesView = new SelectResourcesView()
+  </script>
+
+  <script>
+    var SelectResourceView = Backbone.View.extend({
+      el: '.resources',
+      render: function () {
+        var that = this
+        console.log(this.model)
+        var template = _.template($('#resource-on-form-template').html(), {resource: this.model});
+        that.$el.append(template);
+      }
+    });
+
+  </script>
+
+  <script>
+    var SelectLevelsView = Backbone.View.extend({
+      el: 'select.level',
+      render: function () {
+        var that = this
         var resources = new Resources();
         resources.fetch({
           success: function (resources) {
@@ -218,29 +244,13 @@
                 }
               })
             })
-            //var template = _.template($('#resources-on-form-template').html(), {resources: resources.models});
-            //that.$el.html(template);
           }
         })
       }
     });
-    var resourcesOnFormView = new ResourcesOnFormView()
+    var selectLevelsView = new SelectLevelsView()
   </script>
 
-  <script>
-    var ResourceOnFormView = Backbone.View.extend({
-      el: '.resources-on-form-view',
-      render: function () {
-        var that = this;
-            console.log(this.model)
-            var template = _.template($('#resource-on-form-template').html(), {resource: this.model});
-            that.$el.append(template);
-          
-      
-      }
-    });
-
-  </script>
 
   <script>
     var GroupEditView = Backbone.View.extend({
@@ -293,9 +303,6 @@
 
   <script>
 
-    // Register instances of our views for use in the router
-    var groupEditView = new GroupEditView()
-
     // Define the routes
     var Router = Backbone.Router.extend({
       routes: {
@@ -309,7 +316,7 @@
     var router = new Router;
     router.on('route:home', function() {
       // render user list
-      resourcesOnFormView.render();
+      selectResourcesView.render();
     })
     router.on('route:group-edit', function(id) {
       groupEditView.render({id: id});
