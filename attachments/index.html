@@ -124,7 +124,7 @@
   </script>
 
   <script type="text/template" id="level-on-form-template">
-    <option value='<% resource.get('id') %>'><%= htmlEncode(resource.get('id')) %></option>
+    <option value='<% level.get('key') %>'><%= htmlEncode(level.get('key')) %></option>
   </script>
 
 
@@ -152,7 +152,7 @@
   <script>
     var Resource = Backbone.couch.Model.extend({"idAttribute":"id",urlRoot:thisDb})
     // Level is not actually a model in the DB
-    var Level = Backbone.couch.Model.extend({"idAttribute":"id",urlRoot:thisDb})
+    var Level = Backbone.couch.Model.extend({"idAttribute":"key",urlRoot:thisDb})
   </script>
 
 
@@ -197,7 +197,7 @@
         var resources = new Resources();
         resources.fetch({
           success: function (resources) {
-            console.log(resources)
+            //console.log(resources)
             _.each(resources.models, function(resource) {
               // @todo Best practice to fetch the model in the collection view or the model's view?
               resource.fetch({
@@ -219,7 +219,7 @@
       el: '.resources',
       render: function () {
         var that = this
-        console.log(this.model)
+        //console.log(this.model)
         var template = _.template($('#resource-on-form-template').html(), {resource: this.model});
         that.$el.append(template);
       }
@@ -229,20 +229,16 @@
 
   <script>
     var SelectLevelsView = Backbone.View.extend({
-      el: 'select.level',
+      el: 'select#levels',
       render: function () {
         var that = this
-        var resources = new Resources();
-        resources.fetch({
-          success: function (resources) {
-            console.log(resources)
-            _.each(resources.models, function(resource) {
-              resource.fetch({
-                success:function(resource) {
-                  var item = new ResourceOnFormView({model: resource})
-                  item.render()
-                }
-              })
+        var levels = new Levels();
+        levels.fetch({
+          success: function (levels) {
+            console.log(levels)
+            _.each(levels.models, function(level) {
+                  var selectLevelView = new SelectLevelView({model: level})
+                  selectLevelView.render()
             })
           }
         })
@@ -251,6 +247,18 @@
     var selectLevelsView = new SelectLevelsView()
   </script>
 
+  <script>
+    var SelectLevelView = Backbone.View.extend({
+      el: 'select#levels',
+      render: function () {
+        var that = this
+        console.log(this.model)
+        var template = _.template($('#level-on-form-template').html(), {level: this.model});
+        that.$el.append(template);
+      }
+    });
+
+  </script>
 
   <script>
     var GroupEditView = Backbone.View.extend({
@@ -307,8 +315,6 @@
     var Router = Backbone.Router.extend({
       routes: {
         "": "home",
-        "group/edit/:id": "group-edit",
-        "group/new": "group-edit",
       }
     });
 
@@ -316,10 +322,8 @@
     var router = new Router;
     router.on('route:home', function() {
       // render user list
-      selectResourcesView.render();
-    })
-    router.on('route:group-edit', function(id) {
-      groupEditView.render({id: id});
+      selectResourcesView.render()
+      selectLevelsView.render()
     })
 
     // Get this party started
