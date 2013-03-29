@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>BeLL LCMS</title>
   <link href="http://raspberrypi.local/css/style.css" type="text/css" rel="stylesheet">
+  <link href="js/vendor/jquery-ui-1.10.2.custom/css/ui-lightness/jquery-ui-1.10.2.custom.css" type="text/css" rel="stylesheet">
 </head>
 <body style="background-color:#FFF">
   <div id="wrapper" style="background-color:#FFF; width:600px;">
@@ -20,8 +21,8 @@
       <table width="95%">
         <tbody><tr>
           <td width="123"><b>Week starting on</b></td>
-          <td width="188"><span id="sprytextfield1">
-          <span style="position: relative;"><input type="text" name="dateExec" id="dateExec" style="width:50%" autocomplete="off" globalnumber="607"></span>
+          <td width="188">
+            <input name="dateExec" id="datepicker" />
           <td width="139"><b>Class </b>: <span id="spryselect1">
             <select name="class" id="levels">
 
@@ -91,6 +92,7 @@
   <script src="js/vendor/jquery-1.7.2.js"></script>
   <script src="js/vendor/underscore-1.4.4.js"></script>
   <script src="js/vendor/backbone-1.0.0.js"></script>
+  <script src="js/vendor/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js"
 
 
   <!-- 
@@ -192,6 +194,8 @@
             //console.log(resources)
             _.each(resources.models, function(resource) {
               // @todo Best practice to fetch the model in the collection view or the model's view?
+              // Maybe best to includs_docs on the collection url so we don't have to perform an http request for 
+              // every resource.
               resource.fetch({
                 success:function(resource) {
                   var selectResourceView = new SelectResourceView({model: resource})
@@ -280,9 +284,16 @@
     // Define the callbacks
     var router = new Router;
     router.on('route:home', function() {
+
+      $( "#datepicker" ).datepicker({
+        inline: false,
+        dateFormat: "yy-mm-dd"
+      });
+      
       // render user list
       selectResourcesView.render()
       selectLevelsView.render()
+
     })
 
     // Get this party started
