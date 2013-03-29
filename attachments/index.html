@@ -141,7 +141,7 @@
 
   <script>
     var Resource = Backbone.couch.Model.extend({"idAttribute":"id",urlRoot:thisDb})
-    // Level is not actually a model in the DB
+    // Level is not actually a model in the DB, it's taken from a mapreduce query where key will be the id we need
     var Level = Backbone.couch.Model.extend({"idAttribute":"key",urlRoot:thisDb})
   </script>
 
@@ -161,7 +161,9 @@
       model: Resource,
       _db: Backbone.couch.db(thisDb)
     })
+  </script>
 
+  <script>
     var Levels = Backbone.couch.Collection.extend({
       couch: function() {
         return {
@@ -258,49 +260,6 @@
       
     });
 
-  </script>
-
-  <script>
-    var GroupEditView = Backbone.View.extend({
-      el: '.group-manager',
-      events: {
-        'submit .edit-group-form': 'saveGroup',
-        'click .group-delete': 'deleteGroup'
-      },
-      saveGroup: function (ev) {
-        var groupDetails = $(ev.currentTarget).serializeObject();
-        var group = new Group();
-        group.save(groupDetails, {
-          success: function (group) {
-            router.navigate('', {trigger:true});
-          }
-        });
-        return false;
-      },
-      deleteGroup: function (ev) {
-        this.group.destroy({
-          success: function () {
-            console.log('destroyed');
-            router.navigate('', {trigger:true});
-          }
-        })
-      },
-      render: function (options) {
-        var that = this;
-        if(options.id) {
-          that.group = new Group({id: options.id});
-          that.group.fetch({
-            success: function (group) {    
-              var template = _.template($('#edit-group-template').html(), {group: group});
-              that.$el.html(template);
-            }
-          })
-        } else {
-          var template = _.template($('#edit-group-template').html(), {group: null});
-          that.$el.html(template);
-        }
-      }
-    });
   </script>
 
 
