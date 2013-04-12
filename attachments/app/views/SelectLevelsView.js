@@ -10,8 +10,6 @@ var SelectLevelsView = Backbone.View.extend({
 
       success: function (levels) {
 
-        console.log(levels)
-       
         // Place each level into its own selectLevelView
         _.each(levels.models, function(level) {
               var selectLevelView = new SelectLevelView({model: level})
