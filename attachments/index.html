@@ -127,7 +127,7 @@
 
 
   <script>
-    var thisDb = "bell-library"
+    var thisDb = document.URL.split("/")[3]
 
     Backbone.couch.options = {
       database: thisDb,
@@ -157,10 +157,14 @@
     var Resources = Backbone.couch.Collection.extend({
       couch: function() {
         return {
-          view: 'ghana-reads/resources',
+          view: 'ghana-reads/resources?include_docs=true',
         }
       },
       model: Resource,
+      comparator: function(resource) {
+        var title = resource.get('title')
+        if (title) return title.toLowerCase()
+      },
       _db: Backbone.couch.db(thisDb)
     })
   </script>
@@ -192,6 +196,7 @@
         resources.fetch({
           success: function (resources) {
             //console.log(resources)
+            resources.sort()
             _.each(resources.models, function(resource) {
               // @todo Best practice to fetch the model in the collection view or the model's view?
               // Maybe best to includs_docs on the collection url so we don't have to perform an http request for 
