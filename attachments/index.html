@@ -141,11 +141,9 @@
   -->
 
 
-  <script>
-    var Resource = Backbone.couch.Model.extend({"idAttribute":"id",urlRoot:thisDb})
-    // Level is not actually a model in the DB, it's taken from a mapreduce query where key will be the id we need
-    var Level = Backbone.couch.Model.extend({"idAttribute":"key",urlRoot:thisDb})
-  </script>
+  <script src="app/models/Level.js"></script>
+
+  <script src="app/models/Resource.js"></script>
 
 
   <!--
@@ -153,128 +151,24 @@
   -->
 
 
-  <script>
-    var Resources = Backbone.couch.Collection.extend({
-      couch: function() {
-        return {
-          view: 'ghana-reads/resources?include_docs=true',
-        }
-      },
-      model: Resource,
-      comparator: function(resource) {
-        var title = resource.get('title')
-        if (title) return title.toLowerCase()
-      },
-      _db: Backbone.couch.db(thisDb)
-    })
-  </script>
 
-  <script>
-    var Levels = Backbone.couch.Collection.extend({
-      couch: function() {
-        return {
-          view: 'ghana-reads/active_levels?group=true',
-        }
-      },
-      model: Level,
-      _db: Backbone.couch.db(thisDb)
-    })
-  </script>
+  <script src="app/collections/Levels.js"> </script>
+  
+  <script src="app/collections/Resources.js"> </script>
 
 
   <!-- 
-    BACKBONE VIEWS (CONTROLLERS)
+    BACKBONE VIEWS
   -->
 
 
-  <script>
-    var SelectResourcesView = Backbone.View.extend({
-      el: 'select.resources',
-      render: function () {
-        var that = this
-        var resources = new Resources();
-        resources.fetch({
-          success: function (resources) {
-            //console.log(resources)
-            resources.sort()
-            _.each(resources.models, function(resource) {
-              // @todo Best practice to fetch the model in the collection view or the model's view?
-              // Maybe best to includs_docs on the collection url so we don't have to perform an http request for 
-              // every resource.
-              resource.fetch({
-                success:function(resource) {
-                  var selectResourceView = new SelectResourceView({model: resource})
-                  selectResourceView.render()
-                }
-              })
-            })
-          }
-        })
-      }
-    });
-    var selectResourcesView = new SelectResourcesView()
-  </script>
+  <script src="app/views/SelectResourcesView.js"> </script> 
 
-  <script>
-    var SelectResourceView = Backbone.View.extend({
-      el: '.resources',
-      render: function () {
-        var that = this
-        //console.log(this.model)
-        // Generate a levels string
-        var levels = ""
-        $.each(this.model.get('levels'), function(index, level) { 
-          levels += level + " "
-        })
-        var template = _.template($('#resource-on-form-template').html(), {resource: this.model, levels: levels});
-        that.$el.append(template);
-      }
-    });
+  <script src="app/views/SelectResourceView.js"> </script>
 
-  </script>
+  <script src="app/views/SelectLevelsView.js"> </script>
 
-  <script>
-    var SelectLevelsView = Backbone.View.extend({
-      el: 'select#levels',
-      render: function () {
-        var that = this
-        var levels = new Levels();
-        levels.fetch({
-          success: function (levels) {
-            console.log(levels)
-            _.each(levels.models, function(level) {
-                  var selectLevelView = new SelectLevelView({model: level})
-                  selectLevelView.render()
-            })
-          }
-        })
-      }
-    });
-    var selectLevelsView = new SelectLevelsView()
-  </script>
-
-  <script>
-    var SelectLevelView = Backbone.View.extend({
-      el: 'select#levels',
-      /// setElement: function(something) {}, // need to find better docs on this
-      events: {
-        // @todo This event is firing for EVERY level, should just be this one level.  Might need to use something like View.setElement
-        'click': 'showResourcesByLevel'
-      },
-      render: function () {
-        var that = this
-        console.log(this.model)
-        var template = _.template($('#level-on-form-template').html(), {level: this.model});
-        that.$el.append(template);
-      },
-      showResourcesByLevel: function(ev) {
-        console.log(ev)
-        console.log(this)
-      }
-      
-    });
-
-  </script>
+  <script src="app/views/SelectLevelView.js"> </script>
 
 
   <!-- 
@@ -283,6 +177,10 @@
 
 
   <script>
+
+    // Get the collections
+    var selectResourcesView = new SelectResourcesView()
+    var selectLevelsView = new SelectLevelsView()
 
     // Define the routes
     var Router = Backbone.Router.extend({
@@ -304,6 +202,19 @@
       selectResourcesView.render()
       selectLevelsView.render()
 
+    })
+
+    // Filter by level
+    router.on(':level', function() {
+
+     $( "#datepicker" ).datepicker({
+        inline: false,
+        dateFormat: "yy-mm-dd"
+      });
+      
+      // render user list
+      selectResourcesView.render(resources.where({level:level}))
+      selectLevelsView.render()
     })
 
     // Get this party started
