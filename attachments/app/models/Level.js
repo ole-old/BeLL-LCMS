@@ -1,0 +1,1 @@
+var Level = Backbone.couch.Model.extend({"idAttribute":"key",urlRoot:thisDb})
