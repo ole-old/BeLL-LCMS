@@ -112,7 +112,7 @@
 
 
   <script type="text/template" id="resource-on-form-template">
-    <option value='<%= resource.get('id') %>'><%= htmlEncode(resource.get('title')) %></option>
+    <option value='<%= resource.get('id') %>'><%= htmlEncode(resource.get('title')) %> (<%= levels %>)</option>
   </script>
 
   <script type="text/template" id="level-on-form-template">
@@ -221,7 +221,12 @@
       render: function () {
         var that = this
         //console.log(this.model)
-        var template = _.template($('#resource-on-form-template').html(), {resource: this.model});
+        // Generate a levels string
+        var levels
+        $.each(this.model.get('levels'), function(index, level) { 
+          levels += level + " "
+        })
+        var template = _.template($('#resource-on-form-template').html(), {resource: this.model, levels: levels});
         that.$el.append(template);
       }
     });
