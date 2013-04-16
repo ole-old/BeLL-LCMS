@@ -52,7 +52,20 @@ ddoc.views = {
         })
       }
     }
+  },
+
+  /*
+   * http://raspberrypi.local:5984/bell-library/_design/ghana-reads/_view/LessonPlans_by_prepared_By?key="OLE Administrator"
+   */
+  LessonPlans_by_prepared_By: {
+    map: function(doc) {
+      if (doc.kind == 'LessonPlan') {
+        emit(doc.prepared_By, doc._id)
+      }
+    }
   }
+
+
 
 }
 
