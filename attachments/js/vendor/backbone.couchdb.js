@@ -56,6 +56,7 @@
         this.create(_db, model, cb);
       },
       read: function(_db, model, cb) {
+        _db = model._db
         _db.openDoc(model.id, {
           success: cb.success,
           error: cb.error
