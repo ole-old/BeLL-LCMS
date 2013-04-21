@@ -33,6 +33,10 @@
     model: {
       create: function(_db, model, cb) {
         var opts = (model.couch && model.couch()) || {};
+        // @rjsteinert When Backbone Forms does saveForm(), 
+        // _db is undefine on the FIRST try.
+        if(!_db) 
+          var _db = model._db
         var method = _.bind(_db.saveDoc, _db);
         if ('update' in opts)
           method = _.bind(_db.updateDoc, _db, opts.update);
