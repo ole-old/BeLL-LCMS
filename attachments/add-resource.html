@@ -17,7 +17,7 @@
   <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet">
   <link href="js/vendor/jquery-ui-1.10.2.custom/css/ui-lightness/jquery-ui-1.10.2.custom.css" type="text/css" rel="stylesheet">
   <style type="text/css">
-  
+
     #app {
       margin: 20px;
 
@@ -82,6 +82,7 @@
   <script src="js/vendor/jquery.couch.js"></script>
   <script src="js/vendor/backbone.couchdb.js"></script>
   <script src="js/vendor/html-encode.js"></script>
+  <script src="js/vendor/jquery.url.js"></script>
 
 
 
@@ -142,7 +143,12 @@
 
   $(document).ready(function() {
     window.resourceForm = new window.ResourceForm()
-    $('#app').html(resourceForm.render().el);
+    if ($.url().param("id")) {
+      resourceForm.render($.url().param("id"))
+    }
+    else {
+      resourceForm.render()
+    }
   })
 
  </script>
