@@ -15,6 +15,6 @@ var Resources = Backbone.couch.Collection.extend({
     if (title) return title.toLowerCase()
   },
 
-  _db: Backbone.couch.db(thisDb)
+  _db: Backbone.couch.db(window.thisDb)
 
 })
