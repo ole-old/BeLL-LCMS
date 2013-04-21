@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>BeLL LCMS</title>
+</head>
+
+
+
+  <!-- 
+    STYLES
+  -->
+
+
+
+  <link href="http://raspberrypi.local/css/style.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet">
+  <link href="js/vendor/jquery-ui-1.10.2.custom/css/ui-lightness/jquery-ui-1.10.2.custom.css" type="text/css" rel="stylesheet">
+  <style type="text/css">
+    li {
+      float: left;
+      line-height: 20px;
+      list-style: none outside none;
+      margin: 0;
+      padding: 11px;
+    }
+  </style>
+
+
+
+  <!-- 
+    SCAFFOLDING
+  -->
+
+
+
+<body style="background-color:#FFF">
+  <div id="wrapper" style="background-color:#FFF; width:600px;">
+    <div id="rightContent" style="float:none; margin-left:auto; margin-right:auto; width:500px; margin-left:auto; margin-right:auto;">
+      
+    </div>
+  </div>
+</body>
+
+
+
+  <!-- 
+    SCRIPTS
+  -->
+
+
+
+  <script src="js/vendor/jquery-1.7.2.js"></script>
+  <script src="js/vendor/underscore-1.4.4.js"></script>
+  <script src="js/vendor/backbone-1.0.0.js"></script>
+  <script src="js/vendor/backbone-forms.js"></script>
+  <script src="js/vendor/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js"></script>
+  <script src="/_utils/script/json2.js"></script>
+  <script src="/_utils/script/jquery.couch.js?0.8.0"></script>
+  <script src="/_utils/script/jquery.form.js?0.9.0"></script>
+  <script src="js/vendor/sha1.js"></script>
+  <script src="js/vendor/jquery.couch.js"></script>
+  <script src="js/vendor/backbone.couchdb.js"></script>
+  <script src="js/vendor/html-encode.js"></script>
+
+
+
+  <!--
+    TEMPLATES
+  -->
+
+
+
+  <script type="text/template" id="resource-on-form-template">
+    <option value='<%= resource.get('id') %>'><%= htmlEncode(resource.get('title')) %> (<%= levels %>)</option>
+  </script>
+
+  <script type="text/template" id="level-on-form-template">
+    <option value='<%= level.get('key') %>'><%= htmlEncode(level.get('key')) %></option>
+  </script>
+
+
+
+  <!--
+    SETTINGS
+  -->
+
+
+
+  <script>
+    var thisDb = document.URL.split("/")[3]
+
+    Backbone.couch.options = {
+      database: thisDb,
+      design: 'ghana-reads'
+    };
+  </script>
+
+
+
+  <!-- 
+    BACKBONE MODELS 
+  -->
+
+
+
+  <script src="app/models/Level.js"></script>
+  <script src="app/models/Resource.js"></script>
+
+
+
+  <!--
+    BACKBONE COLLECTIONS
+  -->
+
+
+
+  <script src="app/collections/Levels.js"> </script>
+  <script src="app/collections/Resources.js"> </script>
+
+
+
+  <!-- 
+    BACKBONE VIEWS
+  -->
+
+
+
+  <script src="app/views/SelectResourcesView.js"> </script> 
+  <script src="app/views/SelectResourceView.js"> </script>
+  <script src="app/views/SelectLevelsView.js"> </script>
+  <script src="app/views/SelectLevelView.js"> </script>
+
+
+
+  <!-- 
+    App
+  -->
+
+
+
+  <script>
+
+    var resource = new Resource();
+
+    var form = new Backbone.Form({
+        model: resource
+    }).render();
+
+    $('#rightContent').append(form.el);
+
+
+ </script>
+
+
+</html> 
+

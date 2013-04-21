@@ -1,4 +1,4 @@
- var SelectResourceView = Backbone.View.extend({
+var SelectResourceView = Backbone.View.extend({
   
   el: '.resources',
   

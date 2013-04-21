@@ -2,7 +2,7 @@
   , path = require('path')
 
 ddoc = 
-  { _id:'_design/ghana-reads'
+  { _id:'_design/bell-lcms'
   , rewrites : 
     [ {from:"/", to:'index.html'}
     , {from:"/api", to:'../../'}
