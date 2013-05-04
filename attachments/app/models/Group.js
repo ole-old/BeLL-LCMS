@@ -1,15 +1,20 @@
-var Group = Backbone.couch.Model.extend({
+var Group = Backbone.Model.extend({
 
-  idAttribute: "id",
+  idAttribute: "_id",
 
-  urlRoot: thisDb,
+  urlRoot: "/" + window.thisDb,
 
   defaults: {
     kind: "group"
   },
 
-  initialize: function() {
-    this.on('sync', this.createDatabase(), this)
+  // @todo This event thing isn't working so well 
+  events: {
+    "all": "createDatabase"
+  },
+
+  initialize: function(){
+    this.on('all', this.createDatabase(), this)
   },
 
   schema: {
@@ -22,12 +27,15 @@ var Group = Backbone.couch.Model.extend({
 
   createDatabase: function() {
     // create a database for the Group if there isn't one already
-    if(!this.get('database') && this.id) {
+    console.log(this)
+    if(this.get('database') == "" && this.get('_id')) {
+      console.log('Attempting to create a database for group ' + this.get("_id"))
       var databaseName = "group-" + this.get('_id')
+      var that = this 
       $.couch.db(databaseName).create({
         success: function(data) {
-          this.set("database", databaseName)
-          this.save()
+          that.set("database", databaseName)
+          that.save()
         },
         error: function(status) {
           console.log(status);
