@@ -1,7 +1,9 @@
 var GroupView = Backbone.View.extend({
 
   render: function () {
-    this.$el.html(this.model.get('name'))
+    var groupForm = new GroupForm({model: this.model})
+    groupForm.render()
+    this.$el.append(groupForm.el)
   }
 
 });

@@ -132,13 +132,12 @@
   <script>
 
   $(document).ready(function() {
-    window.groupForm = new window.GroupForm()
-    if ($.url().param("id")) {
-      groupForm.render($.url().param("id"))
-    }
-    else {
-      groupForm.render()
-    }
+
+    window.group = new window.Group()
+    window.groupForm = new window.GroupForm({model: window.group})
+    window.groupForm.render()
+    $("#app").html(window.groupForm.el)
+
   })
 
  </script>

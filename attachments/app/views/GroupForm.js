@@ -2,33 +2,19 @@ $(function() {
 
     window.GroupForm = Backbone.View.extend({
 
-      el:"#app",
-
       events: {
           "click button#formButton": "saveForm"
       },
 
       initialize: function() {
-        
+        if ($.url().param("id")) {
+          this.model = new Group( { id : $.url().param('id') } )
+        }  
       },
 
       render: function(id = null) {
 
-        if (id) {
-          this.model = new Group( { id : $.url().param('id') } )
-          that = this
-          this.model.fetch({success: function(model, response, options) {
-            that.model = model
-            return that.buildForm()
-          }})
-
-        }
-        else {
-          this.model = new Group()
-          return this.buildForm()
-        }
-
-
+        this.buildForm()
 
       },
 

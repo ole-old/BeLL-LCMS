@@ -132,6 +132,7 @@
 
   <script src="app/views/GroupsView.js"> </script>
   <script src="app/views/GroupView.js"> </script>
+  <script src="app/views/GroupForm.js"> </script>
 
 
 
@@ -150,7 +151,7 @@
 
     window.groupsView = new window.GroupsView({collection: window.groups})
 
-window.groupsView.render()
+    window.groupsView.render()
     $('#app').append(window.groupsView.el)
 
   })
