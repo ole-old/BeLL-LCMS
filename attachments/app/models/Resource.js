@@ -1,5 +1,8 @@
 var Resource = Backbone.couch.Model.extend({
   "idAttribute":"id",
+  defaults: {
+    kind: "resource"
+  },
   urlRoot:thisDb,
   schema: {
     subject:      { type: 'Select', options: ['english', 'maths', 'other'] },

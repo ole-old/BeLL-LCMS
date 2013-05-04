@@ -1,6 +1,9 @@
 var Group = Backbone.couch.Model.extend({
   "idAttribute":"id",
   urlRoot:thisDb,
+  defaults: {
+    kind: "group"
+  },
   schema: {
     name:       'Text',
     description: 'Text',
