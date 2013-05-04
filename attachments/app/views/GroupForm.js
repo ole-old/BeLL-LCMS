@@ -59,10 +59,12 @@ $(function() {
           this.model.save(null, {success: function(model, response, options) {
 
             // Create a database for the Group
-            var databaseName = "group-" + model.id
+            console.log(model)
+            var databaseName = "group-" + model.get('_id')
             $.couch.db(databaseName).create({
               success: function(data) {
                 model.set("database", databaseName )
+                model.save()
                 console.log(data);
               },
               error: function(status) {
