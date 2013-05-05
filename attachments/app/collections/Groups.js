@@ -6,7 +6,7 @@ var Groups = Backbone.couch.Collection.extend({
       view: 'bell-lcms/groups?include_docs=true',
     }
   },
- 
+   
   model: Group,
 
   comparator: function(resource) {
@@ -15,5 +15,6 @@ var Groups = Backbone.couch.Collection.extend({
   },
 
   _db: Backbone.couch.db(window.thisDb)
+
 
 })

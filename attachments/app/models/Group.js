@@ -1,14 +1,14 @@
-var Group = Backbone.Model.extend({
+var Group = Backbone.couch.Model.extend({
 
-  idAttribute: "_id",
+  //idAttribute: "_id",
 
-  urlRoot: "/" + window.thisDb,
+  //urlRoot: "/" + window.thisDb,
 
   defaults: {
     kind: "group"
   },
 
-  // @todo This event thing isn't working so well 
+  // @todo This event thing ain't working so well 
   events: {
     "all": "createDatabase"
   },

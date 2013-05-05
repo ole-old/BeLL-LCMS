@@ -133,7 +133,7 @@
 
   $(document).ready(function() {
 
-    window.group = new window.Group({id: $.url().param('id')})
+    window.group = new window.Group({_id: $.url().param('id')})
     window.group.fetch({success: function (model, response, options) {
       window.groupForm = new GroupForm({model: model})
       window.groupForm.render()

@@ -35,7 +35,9 @@ $(function() {
           this.form.commit()
           // Send the updated model to the server
           var that = this
-          this.model.save()
+          this.model.save(null, {success: function() {
+            window.location = 'groups.html'
+          }})
 
       },
 
